@@ -16,6 +16,7 @@ export class ChartComponent implements OnInit {
   randomNumberBounds(min, max) {
     return Math.floor(Math.random() * max) + min;
   }
+
   seedData() {
     var now = new Date();
     for (var i = 0; i < this.MAX_LENGTH; ++i) {
@@ -67,7 +68,7 @@ export class ChartComponent implements OnInit {
   ngOnInit() {
     // document.addEventListener("DOMContentLoaded", function () {
     this.seedData();
-    window.setInterval(this.updateData, 500);
+    window.setInterval(this.updateData.bind(this), 500);
     d3.select("#chart").datum(this.lineArr).call(this.chart);
     d3.select(window).on('resize', this.resize);
     // });
