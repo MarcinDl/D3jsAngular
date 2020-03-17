@@ -58,29 +58,28 @@ export class EcgChartComponent implements OnInit {
     .x(function(d, i) { return this.x(d.getX()); }.bind(this))
     .y(function(d, i) { return this.y(d.getY()); }.bind(this));
 
+    const clipId = `clip${Math.floor(Math.random() * (10000 - 1)) + 1}`;
     this.clip_path = this.g.append('defs')
                             .append('defs')
                             .append('clipPath')
-                            .attr('id', 'clip');
+                            .attr('id', clipId);
 
     this.clip_rect_1 = this.clip_path
                             .append('rect')
                             .attr('width', 0)
                             .attr('height', this.height);
 
-    this.clip_rect_2 = this.g.append('g')
-                              .attr('clip-path', 'url(#clip)')
-                              .append('path')
-                              .datum(this.data)
-                              .attr('class', 'line')
-                              .attr('d', this.line);
+    this.clip_rect_2 = this.clip_path.append("rect")
+                                    .attr("x", this.x(this.MASK_WIDTH))
+                                    .attr("width", this.x(this.MAX_X - this.MASK_WIDTH))
+                                    .attr("height", this.height);
 
     this.path = this.g.append('g')
-                      .attr('clip-path', 'url(#clip)')
+                      .attr('clip-path', `url(#${clipId})`)
                       .append('path')
                       .datum(this.data)
                       .attr('class', 'line')
-                      .attr('d', this.line);
+                      .attr('d', this.line.bind(this));
 
     this.tick();
   }
@@ -170,7 +169,7 @@ export class EcgChartComponent implements OnInit {
         .transition()
         .selection()
         .interrupt()
-        .attr('d', this.line)
+        .attr('d', this.line.bind(this))
         .attr('transform', null);
 }
 
