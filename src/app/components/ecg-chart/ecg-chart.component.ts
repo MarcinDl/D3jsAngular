@@ -54,9 +54,9 @@ export class EcgChartComponent implements OnInit {
                     .range([this.height, 0]);
 
     this.line = d3.line()
-    .curve(d3.curveBasis)
-    .x(function(d, i) { return this.x(d.getX()); }.bind(this))
-    .y(function(d, i) { return this.y(d.getY()); }.bind(this));
+                  .curve(d3.curveBasis)
+                  .x(function(d, i) { return this.x(d.getX()); }.bind(this))
+                  .y(function(d, i) { return this.y(d.getY()); }.bind(this));
 
     const clipId = `clip${Math.floor(Math.random() * (10000 - 1)) + 1}`;
     this.clip_path = this.g.append('defs')
@@ -69,16 +69,18 @@ export class EcgChartComponent implements OnInit {
                             .attr('width', 0)
                             .attr('height', this.height);
 
-    this.clip_rect_2 = this.clip_path.append("rect")
-                                    .attr("x", this.x(this.MASK_WIDTH))
-                                    .attr("width", this.x(this.MAX_X - this.MASK_WIDTH))
-                                    .attr("height", this.height);
+    this.clip_rect_2 = this.clip_path.append('rect')
+                                    .attr('x', this.x(this.MASK_WIDTH))
+                                    .attr('width', this.x(this.MAX_X - this.MASK_WIDTH))
+                                    .attr('height', this.height);
 
     this.path = this.g.append('g')
                       .attr('clip-path', `url(#${clipId})`)
                       .append('path')
                       .datum(this.data)
-                      .attr('class', 'line')
+                      .attr('stroke', 'black')
+                      .attr('stroke-width', 2)
+                      .attr('fill', 'none')
                       .attr('d', this.line.bind(this));
 
     this.tick();
@@ -129,7 +131,7 @@ export class EcgChartComponent implements OnInit {
         next_right_width -= this.x(this.MASK_STEP_SIZE);
     }
 
-    let t = left_rect.transition()
+    const t = left_rect.transition()
         .attr('x', next_left_x)
         .attr('width', next_left_width)
         .duration(this.MASK_TRANSITION_DURATION)
@@ -146,8 +148,7 @@ export class EcgChartComponent implements OnInit {
     let update_datum = (new_x, new_y) => {
         if (new_x % this.MAX_X / this.ecg.getStepSize() >= this.data.length) {
           this.data.push(new Point(new_x, new_y));
-        }
-        else {
+        } else {
           this.data[new_x / this.ecg.getStepSize()] = new Point(new_x, new_y);
         }
     };
